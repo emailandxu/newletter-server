@@ -62,18 +62,21 @@ import flask
 
 
 def read_template():
+    print("read_template")
     newsletter = ""
     with open("./KUST-Newsletter-1.html",'r',encoding="utf-8") as f:
         newsletter = f.read()
     return newsletter
 
 def get_kust_newsletter_pq():
+    print("get_kust_newsletter_pq")
     r = rr.get("http://newsletter.kust.edu.cn/")
     d = pq(r.content.decode("utf-8"))
     d.make_links_absolute(base_url="http://newsletter.kust.edu.cn/")
     return d
 
 def generate_updated_newsletter():
+    print("generate_updated_newsletter")
     newsletter = read_template()
     d = get_kust_newsletter_pq()
     titles = [ i.text for i in d("h3")]
