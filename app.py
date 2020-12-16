@@ -96,4 +96,4 @@ app = flask.Flask(__name__)
 def index():
     return newsletter
 
-app.run()
+app.run(host="0.0.0.0",port=9999)
