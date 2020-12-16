@@ -59,41 +59,52 @@ _logos = [
 import requests as rr
 from pyquery import PyQuery as pq
 import flask
-r = rr.get("http://newsletter.kust.edu.cn/")
-d = pq(r.content.decode("utf-8"))
-d.make_links_absolute(base_url="http://newsletter.kust.edu.cn/")
 
 
-titles = [ i.text for i in d("h3")]
-sumaries = [ i.text.replace("….Read More ","").replace("\u200b","") for i in d(".imgnews1 p")]
-imgs = [i.attr["src"] for i in d(".imgnews1 img").items()]
-links = [i.attr["href"] for i in d(".imgnews1 a").items()]
-logos = [i.attr["src"] for i in d("#mid img").items()]
+def read_template():
+    newsletter = ""
+    with open("./KUST-Newsletter-1.html",'r',encoding="utf-8") as f:
+        newsletter = f.read()
+    return newsletter
+
+def get_kust_newsletter_pq():
+    r = rr.get("http://newsletter.kust.edu.cn/")
+    d = pq(r.content.decode("utf-8"))
+    d.make_links_absolute(base_url="http://newsletter.kust.edu.cn/")
+    return d
+
+def generate_updated_newsletter():
+    newsletter = read_template()
+    d = get_kust_newsletter_pq()
+    titles = [ i.text for i in d("h3")]
+    sumaries = [ i.text.replace("….Read More ","").replace("\u200b","") for i in d(".imgnews1 p")]
+    imgs = [i.attr["src"] for i in d(".imgnews1 img").items()]
+    links = [i.attr["href"] for i in d(".imgnews1 a").items()]
+    logos = [i.attr["src"] for i in d("#mid img").items()]
 
 
-newsletter = ""
-with open("./KUST-Newsletter-1.html",'r',encoding="utf-8") as f:
-    newsletter = f.read()
+    for _title,title in zip(_titles,titles):
+        newsletter = newsletter.replace(_title,title)
 
-for _title,title in zip(_titles,titles):
-    newsletter = newsletter.replace(_title,title)
+    for _link,link in zip(_links,links):
+        newsletter = newsletter.replace(_link,link)
 
-for _link,link in zip(_links,links):
-    newsletter = newsletter.replace(_link,link)
+    for _img,img in zip(_imgs,imgs):
+        newsletter = newsletter.replace(_img,img)
 
-for _img,img in zip(_imgs,imgs):
-    newsletter = newsletter.replace(_img,img)
+    for _sumary,sumary in zip(_sumaries,sumaries):
+        newsletter = newsletter.replace(_sumary,sumary)
 
-for _sumary,sumary in zip(_sumaries,sumaries):
-    newsletter = newsletter.replace(_sumary,sumary)
-
-for _logo,logo in zip(_logos,logos):
-    newsletter = newsletter.replace(_logo,logo)
+    for _logo,logo in zip(_logos,logos):
+        newsletter = newsletter.replace(_logo,logo)
+    
+    return newsletter
 
 app = flask.Flask(__name__)
 
 @app.route("/")
 def index():
+    newsletter = generate_updated_newsletter()
     return newsletter
 
 app.run(host="0.0.0.0",port=9999)
