@@ -52,6 +52,10 @@ _sumaries = [
 "Watersupply is a major issue related to poverty alleviation and people’s livelihood. Since March this year, water shortage has swept Xuanwei city as a result of the dry weat…"
 ]
 
+_logos = [
+    "http://newsletter.kust.edu.cn/images/logo1.png"
+]
+
 import requests as rr
 from pyquery import PyQuery as pq
 import flask
@@ -64,6 +68,7 @@ titles = [ i.text for i in d("h3")]
 sumaries = [ i.text.replace("….Read More ","").replace("\u200b","") for i in d(".imgnews1 p")]
 imgs = [i.attr["src"] for i in d(".imgnews1 img").items()]
 links = [i.attr["href"] for i in d(".imgnews1 a").items()]
+logos = [i.attr["src"] for i in d("#mid img").items()]
 
 
 newsletter = ""
@@ -82,6 +87,8 @@ for _img,img in zip(_imgs,imgs):
 for _sumary,sumary in zip(_sumaries,sumaries):
     newsletter = newsletter.replace(_sumary,sumary)
 
+for _logo,logo in zip(_logos,logos):
+    newsletter = newsletter.replace(_logo,logo)
 
 app = flask.Flask(__name__)
 
