@@ -85,7 +85,7 @@ def generate_updated_newsletter():
     
     try:
         titles, sumaries, imgs, links, logos, _ = get_kust_newsletter_pq_items()
-    except requests.exceptions.RequestException as e:
+    except rr.exceptions.RequestException as e:
         return "访问newsletter.kust.edu.cn超时"
     for _title,title in zip(_titles,titles):
         newsletter = newsletter.replace(_title,title)
